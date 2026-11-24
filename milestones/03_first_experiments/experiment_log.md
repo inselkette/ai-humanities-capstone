@@ -89,3 +89,45 @@ claims have not yet been systematically evaluated.
 4. Document factual errors, omissions, and hallucinations.
 5. Expand the experiment to additional documents.
 6. Evaluate the suitability of RAG for longer documents.
+
+## 8. Baseline comparison: Gemma 3 4B vs. 12B
+
+Both models successfully summarized the same EU document
+using identical prompts and generation parameters.
+
+| Metric | Gemma 3 4B | Gemma 3 12B |
+|---|---:|---:|
+| Runtime | 53.9 s | 172.1 s |
+| Prompt tokens | 13,441 | 13,441 |
+| Output tokens | 316 | 299 |
+
+The 12B model required approximately 3.2 times the runtime
+of the 4B model.
+
+### Preliminary factual verification
+
+The following statements were checked against the extracted
+source document:
+
+1. EU and Member States accounted for 42% of global ODA
+   in 2023 (source lines 60–61).
+2. Global Gateway aims to mobilise up to EUR 300 billion
+   in public and private investments by 2027
+   (source lines 122–124).
+
+Both statements are supported by the source.
+
+The 4B model omitted the reference year (2023) when
+reporting the ODA figure.
+
+These findings represent a limited factual spot-check,
+not a comprehensive hallucination assessment.
+
+### Preliminary interpretation
+
+The 4B model included more quantitative detail,
+while the 12B model placed greater emphasis on strategic
+relationships and private investment.
+
+Whether the larger model provides greater factual accuracy
+or completeness remains an open research question.
