@@ -264,3 +264,44 @@ selection, and human-reviewed evaluation.
 The experiments are documented in this log and their Python scripts
 are stored in the repository. The source PDF, extracted text, and
 model output files remain local and are excluded from version control.
+
+## 11. Planned extension: University of Vienna u:ai API comparison
+
+**Status: Planned, not yet executed (24 November 2026).**
+
+The University of Vienna u:ai API account has been activated and its
+model-list endpoint queried successfully. This provides an opportunity
+to compare locally run Gemma 3 models with externally hosted models
+on the same public-sector document.
+
+**Initial candidates:**
+- `gpt-5-mini` (University of Vienna u:ai API)
+- `gemini-3.5-flash` (University of Vienna u:ai API)
+
+**Proposed procedure:**
+1. Confirm the API request schema and permitted data use in the
+   University's official documentation.
+2. Reuse the extracted text of JOIN(2024) 25 final and the identical
+   approximately 200-word English baseline summarization instruction.
+3. Record the exact model identifiers, date, prompt, settings,
+   latency, token usage, cost if reported, and full output locally.
+4. Evaluate factual accuracy and omissions using the source text and
+   the questions in `src/evaluation/questions.md`.
+5. If feasible, run the structured abstract/keyword prompt and
+   GND candidate-selection workflow with the same candidate pool.
+6. Report model/provider differences as exploratory findings, without
+   claiming a controlled comparison where settings differ.
+
+**Important limitations and safeguards:** API-hosted models may differ
+in tokenization, default reasoning settings, safety configuration,
+and cost accounting. These are potential confounders. Never commit
+the client ID, client secret, or any credential-bearing request to
+GitHub. Only public, rights-cleared documents should be sent to the
+external API. The model-list response indicates available model IDs,
+not measured performance.
+
+**University documentation:**
+https://zid.univie.ac.at/uai/uai-api-zugang
+
+This is follow-up work and is not required for the already documented
+Milestone 3 experiments.
