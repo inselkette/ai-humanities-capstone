@@ -6,9 +6,9 @@
 
 ## 1. Research objective
 
-This experiment investigates how model size and prompt design
-affect the quality of LLM-generated summaries of public-sector
-documents.
+These exploratory experiments investigate how model size, prompt design,
+and retrieval of GND authority records affect summarization and
+subject indexing of public-sector documents.
 
 ## 2. Test document
 
@@ -36,11 +36,15 @@ Models:
 - gemma3:4b
 - gemma3:12b
 
-Generation parameters:
+Baseline summarization parameters:
 - Temperature: 0
 - Context window: 16,384 tokens
 - Maximum generated tokens: 600
 - Streaming: disabled
+
+The structured and GND experiments used different prompts and output
+limits. Their results are therefore not directly comparable as
+controlled tests of model size alone.
 
 ## 4. Experiment 1 — Baseline summarization
 
@@ -64,31 +68,30 @@ These observations do not yet establish factual accuracy.
 
 ## 5. Preliminary observations
 
-The extracted document was processed without an API error.
+The PDF text was successfully processed by both Gemma 3 4B and 12B.
+The 4B model also produced a structured abstract and free-text keywords.
+Subsequent retrieval experiments tested candidate selection against GND
+authority data. Sections 8 and 9 report the measurements and errors.
 
-The model produced a coherent English summary covering
-several major themes.
+## 6. Current limitations
 
-Factual accuracy, completeness, omissions, and unsupported
-claims have not yet been systematically evaluated.
+- Experiments use only one document and are exploratory.
+- There is no human-annotated reference summary or indexing gold standard.
+- Factual verification consists of limited source spot-checks.
+- Subject-heading appropriateness has been assessed qualitatively.
+- GND v1 and v2 use different prompts and output formats.
+- Runs have not been independently repeated for stability assessment.
+- Effective context use and possible input truncation need verification.
+- Retrieved candidate records may be incomplete or irrelevant.
 
-## 6. Limitations
+## 7. Next steps after Milestone 3
 
-- Only one model and one prompt have been tested.
-- Only one document has been processed.
-- No human reference summary has been established.
-- The experiment has not yet been independently repeated.
-- Model-specific tokenization and effective context usage
-  require further verification.
-
-## 7. Next steps
-
-1. Run the identical baseline with Gemma 3 12B.
-2. Design two additional prompt variants.
-3. Compare outputs against the source document.
-4. Document factual errors, omissions, and hallucinations.
-5. Expand the experiment to additional documents.
-6. Evaluate the suitability of RAG for longer documents.
+1. Expand the evaluation to multiple public-sector documents.
+2. Establish human-reviewed reference summaries and subject headings.
+3. Improve GND candidate retrieval and inspect source-text evidence.
+4. Measure formal validity, semantic relevance, and topical coverage separately.
+5. Repeat runs to assess robustness and effective context usage.
+6. Develop and evaluate a working prototype.
 
 ## 8. Baseline comparison: Gemma 3 4B vs. 12B
 
@@ -230,5 +233,34 @@ The next iteration should broaden candidate retrieval, consider
 corporate-body records separately, and require evidence from the
 source document for each selected heading.
 
-Note: Sections 6 and 7 above describe the earlier state of the
-project; subsequent experiments are documented in sections 8 and 9.
+## 10. Milestone 3 submission summary (27 November 2026)
+
+This milestone demonstrates a reproducible exploratory workflow for
+AI-assisted discovery of public-sector documents. A 19-page European
+Commission / High Representative document was extracted with PyMuPDF
+and processed locally through Ollama.
+
+Two Gemma 3 model sizes (4B and 12B) were compared using the same
+baseline summarization prompt. The 4B run took 53.9 seconds, while
+the 12B run took 172.1 seconds. A limited check against the source
+confirmed two quantitative claims, but did not establish overall
+factual accuracy or superiority of either model.
+
+A structured 4B experiment generated an abstract and five free-text
+German keywords. These keywords were then used to retrieve 22
+unique GND candidate records through lobid-gnd. In the first
+retrieval-augmented selection experiment, the model produced four
+formally matching records and one mismatched label/identifier pair.
+In the second experiment, Python assigned authority metadata from
+model-selected candidate codes; both selected codes mapped correctly,
+although one heading appeared semantically inappropriate.
+
+The principal finding is that authority-record retrieval and
+deterministic identifier mapping can improve formal consistency,
+but do not by themselves ensure meaningful subject indexing.
+Future work will focus on better candidate retrieval, evidence-based
+selection, and human-reviewed evaluation.
+
+The experiments are documented in this log and their Python scripts
+are stored in the repository. The source PDF, extracted text, and
+model output files remain local and are excluded from version control.
