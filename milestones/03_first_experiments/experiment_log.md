@@ -131,3 +131,104 @@ relationships and private investment.
 
 Whether the larger model provides greater factual accuracy
 or completeness remains an open research question.
+
+
+## 9. Structured subject indexing and GND retrieval (24 November 2026)
+
+### Structured output with Gemma 3 4B
+
+A structured prompt requested an English abstract, five German free-text
+subject keywords, and uncertainty statements.
+
+- Runtime: 67.8 seconds
+- Prompt tokens: 13,593
+- Output tokens: 746
+- Free-text keywords: Entwicklungszusammenarbeit, Globale Partnerschaften,
+  Nachhaltigkeit, Geopolitik, Investitionsstrategie
+
+These keywords were not initially validated against an authority file.
+Some model-generated uncertainty statements were themselves poorly
+supported by the source document.
+
+### GND candidate retrieval
+
+The five free-text keywords were queried against the lobid-gnd API.
+The revised search applied a SubjectHeading filter and returned
+22 unique candidates. The results included relevant and irrelevant
+authority headings, while the query "Globale Partnerschaften" returned
+no candidates in the observed run.
+
+### Experiment: GND RAG v1
+
+The model received the document and retrieved GND candidate records.
+It generated subject labels, GND identifiers, and brief justifications.
+
+- Model: gemma3:4b
+- Runtime: 56.6 seconds
+- Prompt tokens: 14,614
+- Output tokens: 364
+- Retrieved candidates: 22
+- Formally validated subject records: 4
+- Invalid label/identifier pairings: 1
+
+Formally validated output:
+
+- Entwicklungshilfe — https://d-nb.info/gnd/4014948-1
+- Entwicklungsprojekt — https://d-nb.info/gnd/4070874-3
+- Kirchliche Entwicklungshilfe — https://d-nb.info/gnd/4127506-8
+- Nachhaltigkeit — https://d-nb.info/gnd/4326464-5
+
+The model also generated "Global Gateway" with identifier
+https://d-nb.info/gnd/1299843611. In the retrieved candidate list,
+this identifier was associated with "Environmental, Social and Governance",
+not "Global Gateway". This was an incorrect label/identifier pairing,
+rather than an entirely invented identifier.
+
+"Kirchliche Entwicklungshilfe" passed the formal candidate check
+but appeared semantically inappropriate for the document. Its
+justification invoked religious organizations without establishing
+that they were a central subject of the source.
+
+### Experiment: GND RAG v2
+
+The second implementation provided internally numbered candidate
+codes to the model. The model returned codes only; Python then mapped
+valid codes to their authority labels and identifiers.
+
+- Model: gemma3:4b
+- Runtime: 41.6 seconds
+- Prompt tokens: 13,813
+- Output tokens: 19
+- Retrieved candidates: 22
+- Selected records: 2
+- Invalid codes: 0
+
+Selected output:
+
+- Entwicklungszusammenarbeit — https://d-nb.info/gnd/4198756-1
+- Clean Development Mechanism — https://d-nb.info/gnd/4835547-1
+
+The deterministic mapping prevented mismatched names and identifiers
+within the candidate pool. However, "Clean Development Mechanism"
+appeared semantically unsuitable: the specific Kyoto Protocol
+mechanism had not been identified as a central topic of the document.
+
+### Interpretation and limitations
+
+These experiments distinguish (1) formal authority-data validity,
+(2) semantic appropriateness, and (3) topical coverage. Retrieval
+alone does not ensure appropriate indexing. Candidate-code selection
+addresses one formal error mode but cannot guarantee relevance.
+
+Both runs used a single document and the same initial candidate pool.
+Their prompts and output formats differed, so runtime and selection
+differences cannot be attributed to one isolated variable. No
+human-annotated gold standard or systematic subject-indexing quality
+metric has yet been established.
+
+The next iteration should broaden candidate retrieval, consider
+corporate-body records separately, and require evidence from the
+source document for each selected heading.
+
+Note: Sections 6 and 7 above describe the earlier state of the
+project; subsequent experiments are documented in sections 8 and 9.
